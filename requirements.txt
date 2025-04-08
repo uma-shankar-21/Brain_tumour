@@ -4,4 +4,3 @@ numpy
 pandas
 streamlit
 tensorflow
-PIL
