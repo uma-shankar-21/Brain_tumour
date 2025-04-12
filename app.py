@@ -44,7 +44,7 @@ def names(number):
 
 def recognize_image(image):
     # Resize the image to the expected dimensions
-    img = Image.fromarray(image).resize((128, 128))
+    img = image.resize((128, 128))
     # Convert the image to a NumPy array
     x = np.array(img)
     # Reshape the image to match the model input
