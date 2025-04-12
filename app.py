@@ -1,11 +1,10 @@
-import os
 import keras
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from PIL import Image
 import numpy as np
 import pandas as pd
-import streamlit as st
+import gradio as gr
 
 model = Sequential()
 
@@ -33,53 +32,47 @@ model.add(Dense(2, activation='softmax'))
 model.compile(loss = "categorical_crossentropy", optimizer='Adamax')
 
 
-# Load your model (assuming model.pkl is the model file)
-#model = tf.keras.models.load_model('model.pkl')
-
-def names(number):
-    if number == 0:
-        return 'Its a Tumor'
-    else:
-        return 'No, Its not a tumor'
-
 def recognize_image(image):
     # Resize the image to the expected dimensions
-    img = image.resize((128, 128))
+    img = Image.fromarray(image).resize((128, 128))
     # Convert the image to a NumPy array
     x = np.array(img)
     # Reshape the image to match the model input
     x = x.reshape(1, 128, 128, 3)
 
     # Make a prediction
-    res = model.predict(x)
-    classification = np.argmax(res, axis=-1)[0]
+    res = model.predict_on_batch(x)
+    classification = np.argmax(res[0])
 
-    # Map the class index to the actual class name
-    class_names = ['No Tumor', 'Tumor']  # Example class names, update according to your model
-    result = names(classification)
+    # Map the class index to the actual class name (assuming you have a list of class names)
+    #class_names = ['No Tumor', 'Tumor']  # Example class names, update according to your model
+    #result = f"{names(classification)}"str(res[0][classification]*100,2) + '% Confidence That ' +
 
-    return result
+    return names(classification)
 
-# Streamlit App Layout
-st.title("Brain Tumor Prediction App")
-st.markdown("### Upload an image to check if a brain tumor is present or not")
+def names(number):
+    if number==1:
+        return 'Its a Tumor'
+    else:
+        return 'Its not a tumor'
+    
+# Assuming recognize_image, examples, heading_title, desc, long_desc, and selected_theme are defined elsewhere.
+#@title You can also add some description and explanation to your app's interace if you want. Go ahead and specify some text for the description and the long description (if you want to):
+desc = "Brain tumor app. Let's See!" # @param {type:"string"}
+long_desc = "Select an image or upload one to predict if brain tumor is present or not" # @param {type:"string"}
+# Update the import for components
+image = gr.Image()
+label = gr.Label()
 
-# Display the description and long description
-desc = "Brain tumor app. Let's learn!"
-long_desc = "Select an image or upload one to predict if a brain tumor is present or not."
+# Create the interface with the updated component imports
+iface = gr.Interface(
+    fn=recognize_image,
+    inputs=image,
+    outputs=label,
+    title="Brain tumor classification App",
+    description=desc,
+    article=long_desc,
+    theme=gr.themes.Monochrome()  # Make sure this is defined based on user selection as explained in previous messages
+)
 
-st.markdown(f"<p style='font-size:16px'>{desc}</p>", unsafe_allow_html=True)
-st.markdown(f"<p style='font-size:14px'>{long_desc}</p>", unsafe_allow_html=True)
-
-# Upload image
-image_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
-
-if image_file is not None:
-    # Load image
-    image = Image.open(image_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
-
-    # Perform prediction
-    if st.button('Predict'):
-        result = recognize_image(image)
-        st.write(f"Prediction: {result}")
+iface.launch(share=True, debug=True)
