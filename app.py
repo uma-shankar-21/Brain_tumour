@@ -44,7 +44,7 @@ def names(number):
 
 def recognize_image(image):
     # Resize the image to the expected dimensions
-    img = image.resize((128, 128))
+    img = Image.fromarray(image).resize((128, 128))
     # Convert the image to a NumPy array
     x = np.array(img)
     # Reshape the image to match the model input
@@ -52,7 +52,7 @@ def recognize_image(image):
 
     # Make a prediction
     res = model.predict(x)
-    classification = np.argmax(res, axis=-1)[0]
+    classification = np.argmax(res[0])
 
     # Map the class index to the actual class name
     class_names = ['No Tumor', 'Tumor']  # Example class names, update according to your model
