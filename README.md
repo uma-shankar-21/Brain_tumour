@@ -15,3 +15,7 @@ Deployed and ready for practical healthcare use
 
 🔗 Live Demo: https://huggingface.co/spaces/uma-shankar-21/Brain-tumour
 📁 Dataset: Brain MRI Dataset
+
+Below is the Proccess for the application
+![image](https://github.com/user-attachments/assets/bd2b997a-5477-4791-b674-aaf767a2c01e)
+![image](https://github.com/user-attachments/assets/fce1dbe3-61b7-4c4a-bae4-276a4af1495c)
